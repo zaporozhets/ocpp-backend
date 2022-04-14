@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime
+import os
 
 try:
     import websockets
@@ -70,11 +71,19 @@ async def on_connect(websocket, path):
 
 
 async def main():
+    ON_HEROKU = os.environ.get('ON_HEROKU')
+
+    if ON_HEROKU:
+        # get the heroku port
+        port = int(os.environ.get('PORT', 17995))  # as per OP comments default is 17995
+    else:
+        port = 3000
+
     #  deepcode ignore BindToAllNetworkInterfaces: <Example Purposes>
     server = await websockets.serve(
         on_connect,
         '0.0.0.0',
-        9000,
+        port,
         subprotocols=['ocpp2.0.1']
     )
 
